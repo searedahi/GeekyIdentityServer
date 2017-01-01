@@ -73,9 +73,6 @@ namespace GeekyIdentityServer
                 AuthenticationScheme = "Google",
                 DisplayName = "Google",
                 SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-
-                ClientId = "1006275645875-ve389f3h8f3fsqsprkmhogk8uankgm80.apps.googleusercontent.com",
-                ClientSecret = "7myss1XM-4A7W4Hy0Z1mMYNn"
             });
 
             app.UseStaticFiles();
