@@ -14,8 +14,10 @@
       "imports": "dnxcore50"
     }
   },
-  
+
   "runtimes": {
-    "win10-x64": {}
+    "win10-x64": {},
+    "win8-x86": {},
+    "win7-x86": {}
   }
 }
