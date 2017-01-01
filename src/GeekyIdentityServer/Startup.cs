@@ -68,12 +68,12 @@ namespace GeekyIdentityServer
                 AutomaticChallenge = false
             });
 
-            app.UseGoogleAuthentication(new GoogleOptions
-            {
-                AuthenticationScheme = "Google",
-                DisplayName = "Google",
-                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            });
+            //app.UseGoogleAuthentication(new GoogleOptions
+            //{
+            //    AuthenticationScheme = "Google",
+            //    DisplayName = "Google",
+            //    SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+            //});
 
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
