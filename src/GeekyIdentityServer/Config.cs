@@ -56,7 +56,7 @@ namespace GeekyIdentityServer
                     ClientName = "Resource Owner Client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
-                    ClientSecrets = 
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -66,11 +66,36 @@ namespace GeekyIdentityServer
                 // OpenID Connect hybrid flow and client credentials client (MVC)
                 new Client
                 {
-                    ClientId = "mvc",
+                    ClientId = "GeekyUserManager",
                     ClientName = "MVC Client",
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
 
-                    ClientSecrets = 
+                    ClientSecrets =
+                    {
+                        new Secret("secret".Sha256())
+                    },
+
+                    RedirectUris = { "http://localhost:5002/signin-oidc" },
+                    PostLogoutRedirectUris = { "http://localhost:5002" },
+
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Email,
+                        "api1"
+                    },
+                    AllowOfflineAccess = true
+                },
+
+                // OpenID Connect hybrid flow and client credentials client (MVC)
+                new Client
+                {
+                    ClientId = "mvc.implicit",
+                    ClientName = "mvc.implicit",
+                    AllowedGrantTypes = GrantTypes.ImplicitAndClientCredentials,
+
+                    ClientSecrets =
                     {
                         new Secret("secret".Sha256())
                     },
@@ -105,7 +130,27 @@ namespace GeekyIdentityServer
                         IdentityServerConstants.StandardScopes.Profile,
                         "api1"
                     }
-                }
+                },
+
+               new Client
+               {
+                   ClientId = "mvcSample",
+                   ClientName = "MVC Client",
+                   AllowedGrantTypes = GrantTypes.Implicit,
+                   AllowOfflineAccess = true,
+
+                   // where to redirect to after login
+                   RedirectUris = { "http://localhost:5002/signin-oidc" },
+
+                   // where to redirect to after logout
+                   PostLogoutRedirectUris = { "http://localhost:5002" },
+
+                   AllowedScopes = new List<string>
+                   {
+                       IdentityServerConstants.StandardScopes.OpenId,
+                       IdentityServerConstants.StandardScopes.Profile
+                   }
+               }
             };
         }
 

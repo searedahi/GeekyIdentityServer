@@ -1,0 +1,112 @@
+@using System.Text
+@using System.Threading.Tasks
+@model IEnumerable<GeekyUser>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>
+    @ViewData["Title"]
+</h2>
+<p class="text-success">@ViewData["StatusMessage"]</p>
+<div>
+    <a asp-action="Create" class="btn btn-success"><i class="glyphicon glyphicon-plus"></i> Create</a>
+    <span>
+        <em>
+            or pick a user.
+        </em>
+    </span>
+</div>
+
+<br />
+
+
+
+
+
+
+
+
+
+
+<table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th></th>
+            <th>UserName</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>City</th>
+            <th>Last Order</th>
+        </tr>
+    </thead>
+    @*<tfoot>
+            <tr>
+                <th></th>`
+                <th></th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>City</th>
+                <th>Last Order</th>
+            </tr>
+        </tfoot>*@
+    <tbody>
+
+        @{
+            var rndStart = 10;
+        }
+        @foreach (var user in Model.OrderBy(u => u.UserName))
+        {
+            var rndNum = new Random(rndStart);
+            var rowBG = new StringBuilder();
+            rowBG.Append("rgba(");
+            rowBG.Append(rndNum.Next(254));
+            rowBG.Append(",");
+            rowBG.Append(rndNum.Next(254));
+            rowBG.Append(",");
+            rowBG.Append(rndNum.Next(254));
+
+            var profilePicBG = new StringBuilder(rowBG.ToString());
+            profilePicBG.Append(",1)");
+            rowBG.Append(",0.2)");
+
+
+            <tr style="background-color: @rowBG.ToString() !important; cursor: pointer" onclick="location.href = '@(Url.Action("Details", "Users", new {id = user.Id}))'">
+                <td style="background-color: @profilePicBG.ToString() !important;"><img src="@user.Profiles.FirstOrDefault().ProfileImage.ThumbnailUrl" class="userIndexThumb" /></td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.FirstName</td>
+                <td>ComingSoon</td>
+                <td>ComingSoon</td>
+            </tr>
+
+            rndStart++;
+
+        }
+    </tbody>
+</table>
+
+
+
+@section Scripts
+{
+
+
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css" />
+
+    <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "aoColumnDefs": [
+                    { "bSortable": false, "aTargets": [0] }
+                ]
+            });
+        });
+    </script>
+
+}

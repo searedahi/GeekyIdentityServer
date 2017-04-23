@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using IdentityServer4;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
@@ -22,9 +24,21 @@ namespace GeekyIdentityServer
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+
+            if (env.IsDevelopment())
+            {
+                // For more details on using the user secret store see 
+                // http://go.microsoft.com/fwlink/?LinkID=532709
+                builder.AddUserSecrets();
+            }
+
+            builder.AddEnvironmentVariables();
+
             Configuration = builder.Build();
+
+
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -38,9 +52,14 @@ namespace GeekyIdentityServer
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
+            string certificate = Configuration["GeekyThumbprint"];
+            X509Certificate2 identityCertificate = GetCertificate(certificate);
+
             // configure identity server with in-memory users, but EF stores for clients and scopes
             services.AddIdentityServer()
-                .AddTemporarySigningCredential()
+                .AddSigningCredential(identityCertificate)
+                .AddInMemoryIdentityResources(Config.GetIdentityResources())
+                .AddInMemoryClients(Config.GetClients())
                 .AddTestUsers(Config.GetUsers())
                 .AddConfigurationStore(builder =>
                     builder.UseSqlServer(connectionString, options =>
@@ -68,12 +87,25 @@ namespace GeekyIdentityServer
                 AutomaticChallenge = false
             });
 
-            //app.UseGoogleAuthentication(new GoogleOptions
-            //{
-            //    AuthenticationScheme = "Google",
-            //    DisplayName = "Google",
-            //    SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
-            //});
+            app.UseGoogleAuthentication(new GoogleOptions
+            {
+                AuthenticationScheme = "Google",
+                DisplayName = "Google",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                ClientId = Configuration["Authentication:Google:ClientId"],
+                ClientSecret = Configuration["Authentication:Google:ClientSecret"]
+            });
+
+            app.UseFacebookAuthentication(new FacebookOptions()
+            {
+                AuthenticationScheme = "Facebook",
+                DisplayName = "Facebook",
+                SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme,
+
+                ClientId = Configuration["Authentication:Facebook:AppId"],
+                ClientSecret = Configuration["Authentication:Facebook:AppSecret"]
+            });
 
             app.UseStaticFiles();
             app.UseMvcWithDefaultRoute();
@@ -115,5 +147,35 @@ namespace GeekyIdentityServer
                 }
             }
         }
+
+
+
+        public X509Certificate2 GetCertificate(string thumbprint)
+        {
+
+            if (string.IsNullOrEmpty(thumbprint))
+                throw new ArgumentNullException("thumbprint", "Argument 'thumbprint' cannot be 'null' or 'string.empty'");
+
+            X509Certificate2 retVal = null;
+
+
+            object thingy = null;
+            
+            X509Store certStore = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+
+            certStore.Open(OpenFlags.ReadOnly);
+
+            X509Certificate2Collection certCollection = certStore.Certificates.Find(X509FindType.FindByThumbprint, thumbprint, false);
+
+            if (certCollection.Count > 0)
+            {
+                retVal = certCollection[0];
+            }
+
+            certStore.Dispose();
+
+            return retVal;
+        }
+
     }
 }

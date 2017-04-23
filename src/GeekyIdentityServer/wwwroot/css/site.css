@@ -9,6 +9,7 @@
   position: relative;
   top: -2px;
   display: inline;
+  min-height: 50px;
 }
 .icon {
   position: relative;
@@ -41,4 +42,18 @@
 }
 .page-consent .consent-form .consent-remember {
   padding-left: 16px;
+}
+
+.Facebook-loginTile {
+    background-image: url('../fb-f-logo__blue_50.png');
+    height: 50px;
+    width: 50px;
+    border: none;
+}
+
+.Google-loginTile {
+    background-image: url('../Google50x50.png');
+    height: 50px;
+    width: 50px;
+    border: none;
 }

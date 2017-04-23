@@ -1,5 +1,4 @@
-﻿@using GeekyIdentityServer.Quickstart.Account
-@model GeekyIdentityServer.Quickstart.Account.LoginViewModel
+﻿@model GeekyIdentityServer.Models.Account.LoginViewModel
 
 <div class="login-page">
     <div class="page-header">
@@ -9,13 +8,40 @@
     @Html.Partial("_ValidationSummary")
 
     <div class="row">
+        
+        @if (Model.ExternalProviders.Any())
+        {
+            <div class="col-md-6 col-sm-6 external-providers">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Login Using An Existing Profile:</h3>
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-inline">
+                            @foreach (var provider in Model.ExternalProviders)
+                            {
+                                <li>
+                                    <a class="btn btn-default @provider.DisplayName-loginTile"
+                                       asp-action="ExternalLogin"
+                                       asp-route-provider="@provider.AuthenticationScheme"
+                                       asp-route-returnUrl="@Model.ReturnUrl"
+                                       alt="@provider.DisplayName"
+                                       title="Login using your @provider.DisplayName account.">
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
 
         @if (Model.EnableLocalLogin)
         {
             <div class="col-sm-6">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Local Login</h3>
+                        <h3 class="panel-title">Login with a Geeky Inc Account</h3>
                     </div>
                     <div class="panel-body">
 
@@ -50,31 +76,7 @@
             </div>
         }
 
-        @if (Model.ExternalProviders.Any())
-        {
-            <div class="col-md-6 col-sm-6 external-providers">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">External Login</h3>
-                    </div>
-                    <div class="panel-body">
-                        <ul class="list-inline">
-                            @foreach (var provider in Model.ExternalProviders)
-                            {
-                                <li>
-                                    <a class="btn btn-default"
-                                       asp-action="ExternalLogin"
-                                       asp-route-provider="@provider.AuthenticationScheme"
-                                       asp-route-returnUrl="@Model.ReturnUrl">
-                                        @provider.DisplayName
-                                    </a>
-                                </li>
-                            }
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        }
+
 
         @if (!Model.EnableLocalLogin && !Model.ExternalProviders.Any())
         {

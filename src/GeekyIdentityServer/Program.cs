@@ -17,7 +17,7 @@ namespace GeekyIdentityServer
                 .UseKestrel()
                 .UseUrls("http://localhost:5000")
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
+                .UseAzureAppServices()
                 .UseStartup<Startup>()
                 .Build();
 
